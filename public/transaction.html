@@ -1,0 +1,244 @@
+<!-- public/transaction.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/flowbite.min.css"
+    rel="stylesheet"
+    />
+    <title>Transaction Page</title>
+    <style>
+        /* Gaya untuk pop-up */
+        #customPopup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            height: 200px;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 200px; /* Sesuaikan lebar pop-up sesuai kebutuhan */
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Gaya untuk latar belakang transparan */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        } 
+        /* Gaya untuk tombol OK */
+        #okButton {
+            margin-top: 55px; /* Sesuaikan margin sesuai kebutuhan */
+        }
+    </style>
+</head>
+<body class="dark">
+    <nav class="bg-white border-gray-200 dark:bg-gray-900">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+          <button data-collapse-toggle="navbar-default" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-default" aria-expanded="false">
+              <span class="sr-only">Open main menu</span>
+              <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+              </svg>
+          </button>
+          <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+            <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+              <li>
+                <a href="/home" id="homeLink" class="block py-2 px-3 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 dark:text-white md:dark:text-blue-500" aria-current="page">Home</a>
+              </li>
+              <li>
+                <a href="/transaksi" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Transaksi</a>
+              </li>
+              <li class="absolute right-5">
+                <a href="/" class="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Log out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+    </nav>
+
+    <div class="relative max-w-7xl mx-auto mt-5 p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 ">
+        <form action="">
+            <div class="flex flex-col">
+                <div class="w-1/3 mb-4 flex items-center">
+                    <label for="notransaksi" class="block font-semibold mb-2 mr-5">No Transaction:</label>
+                    <input type="number" name="notransaksi" id="notransaksi" class="w-96 border border-gray-300 rounded-md p-2">
+                </div>
+    
+                <div class="w-1/3 mb-4 flex items-center ">
+                    <label for="tanggaltransaksi" class="block font-semibold mb-2 mr-5">Tanggal Transaction:</label>
+                    <input type="number" name="tanggaltransaksi" id="tanggaltransaksi" class="w-96 border border-gray-300 rounded-md p-2">
+                </div>
+    
+                <div class="w-1/3 mb-4 flex items-center">
+                    <label for="namacustomer" class="block font-semibold mb-2 mr-5">Nama Customer:</label>
+                    <input type="text" name="namacustomer" id="namacustomer" class="w-96 border border-gray-300 rounded-md p-2">
+                </div>
+    
+                <div class="w-1/3 mb-4 flex items-center">
+                    <p class="font-semibold mb-2 mr-5">Pilihan Paket:</p>
+                    <p id="packageName" class="font-semibold mb-2 mr-5"></p>
+                </div>
+    
+                <div class="w-1/3 mb-4 flex items-center">
+                    <p class="font-semibold mb-2 mr-5">Harga Paket:</p>
+                    <p  id="packagePrice" class="font-semibold mb-2 mr-5"></p>
+                </div>
+            </div>
+            
+
+            <div class="absolute top-5 right-5">
+                <div class="mb-4   flex items-center justify-end mt-0">
+                    <label for="tidakadatambahan" class="flex items-center">
+                        <input  type="radio" name="additionalOption" id="tidakadatambahan" class="mr-2">
+                        <span>Tidak ada tambahan - Rp 0</span>
+                    </label>
+                </div>
+        
+                <div class="mb-4  flex items-center justify-end ">
+                    <label for="pelembut" class="flex items-center">
+                        <input type="radio" name="additionalOption" id="pelembut" class="mr-2">
+                        <span>Pelembut - Rp 10,000</span>
+                    </label>
+                </div>
+            </div>
+        </form>
+        <button  id="calculateButton" onclick="calculateTotal()" class="absolute bottom-5 right-5 px-4 py-2 rounded-md  bg-blue-700 ">hitung total harga</button>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto mt-5 p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 ">
+        <div class="flex flex-wrap">
+
+            <div class="w-1/2 mb-4 flex items-center">
+                <p class="font-semibold mb-2 mr-5">Total Harga:</p>
+                <p id="totalHargaText" class="font-semibold mb-2 mr-5"></p>
+            </div>
+
+
+            <div class="w-1/2 mb-4 flex items-center">
+                <p class="font-semibold mb-2 mr-5">Total kembalian:</p>
+                <p id="totalKembalianText" class="font-semibold mb-2 mr-5"></p>
+            </div>
+
+            <div class="w-1/2 mb-4 flex items-center">
+                <label for="paymentAmount" class="block font-semibold mb-2 mr-5">pembayaran:</label>
+                <input type="number" name="paymentAmount" id="paymentAmount" class="w-96 border border-gray-300 rounded-md p-2">
+            </div>
+
+           <divc class="absolute bottom-5 right-5">
+            <button id="calculateChangeButton" onclick="calculateChange()" class="mr-5 px-4 py-2 rounded-md bg-blue-700  text-white">Hitung Kembalian</button>
+
+            <button id="backToHomeButton" onclick="confirmAndNavigateToHome()" class="px-4 py-2 rounded-md bg-green-500 text-white">simpan transaksi</button>
+           </divc>
+        </div>
+    </div>
+<!-- Pop-up Custom -->
+<div id="overlay"></div>
+<div id="customPopup" class=" p-4 bg-white dark:bg-gray-800 dark:border-gray-700 rounded-lg shadow">
+    <p class="text-lg font-semibold mb-2">Transaksi berhasil kembali ke home</p>
+    <button onclick="navigateToHome()" id="okButton" class="px-4 py-2  mx-auto bg-blue-700 text-white rounded-md">OK</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.1.1/flowbite.min.js"></script>
+<script>
+    let selectedPackage = null;
+    let additionalOptions = {
+        tidakadatambahan: 0,
+        pelembut: 10000
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const packageNameElement = document.getElementById("packageName");
+        const packagePriceElement = document.getElementById("packagePrice");
+
+        // Ambil data dari parameter URL
+        const params = new URLSearchParams(window.location.search);
+        const packageName = params.get("name");
+        const packagePrice = params.get("price");
+
+        // Format harga paket dengan menambahkan titik sebagai pemisah ribuan
+        const formattedPrice = parseFloat(packagePrice).toLocaleString("id-ID");
+
+        // Tampilkan informasi paket di halaman transaksi
+        packageNameElement.textContent = `${packageName}`;
+        packagePriceElement.textContent = `Rp ${formattedPrice}`;
+
+        // Set selectedPackage
+        selectedPackage = { name: packageName, price: parseFloat(packagePrice) };
+    });
+
+    function calculateTotal() {
+        const noTransaksi = document.getElementById("notransaksi").value;
+        const tanggalTransaksi = document.getElementById("tanggaltransaksi").value;
+        const namaCustomer = document.getElementById("namacustomer").value;
+
+        // Periksa status checkbox dan sesuaikan additionalOptions
+        additionalOptions.tidakadatambahan = document.getElementById("tidakadatambahan").checked ? 0 : 0;
+        additionalOptions.pelembut = document.getElementById("pelembut").checked ? 10000 : 0;
+
+        // Hitung total harga berdasarkan paket dan pilihan tambahan
+        let totalHarga = parseFloat(selectedPackage.price);
+
+        for (const option in additionalOptions) {
+            if (additionalOptions[option] > 0) {
+                totalHarga += additionalOptions[option];
+            }
+        }
+          // Tampilkan total harga dan kembalian
+        const totalHargaText = document.getElementById("totalHargaText");
+        totalHargaText.textContent = `Rp ${totalHarga.toLocaleString("id-ID")}`;
+ 
+        // Kembalikan nilai totalHarga
+        return totalHarga;
+    }
+
+    // Fungsi untuk menghitung kembalian
+    function calculateChange() {
+        const paymentAmount = parseFloat(document.getElementById("paymentAmount").value) || 0;
+        const totalHarga = calculateTotal();
+        const kembalian = paymentAmount - totalHarga;
+
+         // Tampilkan total dan kembalian
+         const totalHargaText = document.getElementById("totalKembalianText");
+        totalHargaText.textContent = `Rp ${kembalian.toLocaleString("id-ID")}`;
+    }
+
+ 
+        // Fungsi untuk menampilkan pop-up kustom
+        function showCustomPopup() {
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("customPopup").style.display = "block";
+        }
+
+        // Fungsi untuk menyembunyikan pop-up kustom
+        function hideCustomPopup() {
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("customPopup").style.display = "none";
+        }
+
+        // Fungsi untuk konfirmasi dan navigasi ke halaman Home
+        function confirmAndNavigateToHome() {
+            showCustomPopup();
+        }
+
+        // Fungsi untuk kembali ke halaman Home
+        function navigateToHome() {
+            hideCustomPopup();
+            window.location.href = "/home";
+        }
+  
+</script>
+</body>
+</html>
