@@ -104,6 +104,16 @@ http.createServer(async (req, res) => {
         res.end(data);
       }
     });
+  } else if (reqUrl === "/image/apakah") {
+    fs.readFile('./public/assets/download.jpeg', (err, data) => {
+      if (err) {
+        res.writeHead(404);
+        res.end("Error: File not found");
+      } else {
+        res.writeHead(200, { "Content-Type": "image/jpeg" });
+        res.end(data);
+      }
+    });
   } else {
     res.writeHead(404);
     res.end("Error: Page not found");
